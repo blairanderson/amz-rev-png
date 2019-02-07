@@ -1,23 +1,9 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
+import downloadPNG from "./downloadPNG";
 import StarComponent from "./StarComponent";
-import domtoimage from "dom-to-image";
+import monthNames from "./MonthNames";
 import "./styles.css";
-
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-];
 
 function App() {
   const [starCount, updateStarCount] = useState(5);
@@ -42,38 +28,6 @@ function App() {
   function formatDate(date) {
     console.log(typeof date, date);
     setDate(new Date(date));
-  }
-
-  function downloadPNG(e) {
-    const link = document.createElement("a");
-
-    const prefix = "amzn-review";
-
-    const config = {
-      style: {
-        // transform: `scale(${exportSize})`,
-        "transform-origin": "center",
-        background: "black"
-      },
-      filter: n => {
-        return true;
-      },
-      width: "500",
-      height: "300"
-    };
-
-    domtoimage
-      .toPng(document.getElementById("container-dom-node"), config)
-      .then(function(dataUrl) {
-        link.download = `${prefix}.png`;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      })
-      .catch(function(error) {
-        console.error("oops, something went wrong!", error);
-      });
   }
 
   return (
