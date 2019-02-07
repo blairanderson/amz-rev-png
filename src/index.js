@@ -1,33 +1,19 @@
 import React, { useState } from "react";
 import { render } from "react-dom";
+import downloadPNG from "./downloadPNG";
 import StarComponent from "./StarComponent";
-import domtoimage from "dom-to-image";
+import monthNames from "./MonthNames";
 import "./styles.css";
 
-const monthNames = [
-  "January",
-  "February",
-  "March",
-  "April",
-  "May",
-  "June",
-  "July",
-  "August",
-  "September",
-  "October",
-  "November",
-  "December"
-];
-
 function App() {
+  const [editDate, toggleEditDate] = useState(false);
+  const [editDesc, toggleEditDesc] = useState(false);
   const [starCount, updateStarCount] = useState(5);
   const [title, setTitle] = useState("Some Title Here");
   const [date, setDate] = useState(new Date("2019-03-21"));
-  const [editDate, toggleEditDate] = useState(false);
-  const [desc, updateDesc] = useState(
+  const [review, setReview] = useState(
     "This product gets two thumbs up, saved me a lot of re-plumbing. Take your time cutting the old drain out and clean it like you mean it including the outer walls of the pipe, follow the instructions and it goes together in minutes. Don't forget to give the silicone a few hrs to set up before testing."
   );
-  const [editDesc, toggleEditDesc] = useState(false);
 
   function capStars(stars) {
     if (stars > 5) {
@@ -44,45 +30,15 @@ function App() {
     setDate(new Date(date));
   }
 
-  function downloadPNG(e) {
-    const link = document.createElement("a");
-
-    const prefix = "amzn-review";
-
-    const config = {
-      style: {
-        // transform: `scale(${exportSize})`,
-        "transform-origin": "center",
-        background: "black"
-      },
-      filter: n => {
-        return true;
-      },
-      width: "500",
-      height: "300"
-    };
-
-    domtoimage
-      .toPng(document.getElementById("container-dom-node"), config)
-      .then(function(dataUrl) {
-        link.download = `${prefix}.png`;
-        link.href = dataUrl;
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
-      })
-      .catch(function(error) {
-        console.error("oops, something went wrong!", error);
-      });
-  }
-
   return (
     <div className="App">
       <h1>Amazon Review Screenshotter</h1>
       <div>
         <button onClick={e => downloadPNG()}>Save PNG</button>
       </div>
-      <button onClick={e => capStars(starCount - 1)}>-</button>
+      <button disabled={starCount === 1} onClick={e => capStars(starCount - 1)}>
+        -
+      </button>
       <input
         type="text"
         style={{ textAlign: "center", width: "50px" }}
@@ -92,12 +48,23 @@ function App() {
         value={starCount}
         onChange={e => updateStarCount(parseInt(e.target.value))}
       />
-      <button onClick={e => capStars(starCount + 1)}>+</button>
+      <button disabled={starCount === 5} onClick={e => capStars(starCount + 1)}>
+        +
+      </button>
       <input
         type="text"
         value={title}
         onChange={e => setTitle(e.target.value)}
       />
+
+      <div>
+        <button onClick={e => toggleEditDate(!editDate)}>
+          {editDate ? "Done Editing Date" : "Edit Date"}
+        </button>
+        <button onClick={e => toggleEditDesc(!editDesc)}>
+          {editDesc ? "Done Editing Review" : "Edit Review"}
+        </button>
+      </div>
 
       <div
         id="container-dom-node"
@@ -155,7 +122,12 @@ function App() {
         )}
         {editDesc ? (
           <div>
-            <textarea value={desc} rows={10} cols={50} />
+            <textarea
+              value={review}
+              rows={10}
+              cols={50}
+              onChange={e => setReview(e.target.value)}
+            />
             <button onClick={e => toggleEditDesc(!editDesc)}>
               done editing
             </button>
@@ -171,7 +143,7 @@ function App() {
               color: "#111"
             }}
           >
-            {desc}
+            {review}
           </div>
         )}
       </div>
